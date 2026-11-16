@@ -14504,7 +14504,7 @@ body.dv-outline *{outline:1px solid rgba(231,199,125,.28)!important}
 @media(max-width:600px){#dv .r>label{flex-basis:90px}}
 </style>
 <div id="dv"><header><b>🛠 DEV PANEL</b><span class="dim" id="dv-fps"></span><button id="dv-undo" title="Откат (Ctrl+Z)">↶</button><button id="dv-x">✕</button></header><div id="dv-tabs"></div><div id="dv-body"></div></div>
-<button id="dv-btn" title="Панель разработчика (F9)">🛠</button>
+<button id="dv-btn" title="Панель разработчика (F9)" style="display:none">🛠</button>
 <script>
 (function(){
 if(window.VS_DEV)return;
@@ -14616,7 +14616,10 @@ dv.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)r
  if(t.dataset.x){var X=window.PAX_STRATEGIC_SYSTEMS;try{snap();if(t.dataset.x==='runElection')X.runElection(true);else X[t.dataset.x]();commit('Выполнено: '+t.dataset.x)}catch(er){toastF('Ошибка: '+er.message)}}});
 dv.addEventListener('change',function(e){if(e.target.id==='dv-file'){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){$('dv-json').value=r.result;toastF('Файл загружен в редактор — нажмите «Применить правки»')};r.readAsText(f)}});
 dv.addEventListener('keydown',function(e){if(e.target.id==='dv-js'&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();A.run()}});
-function toggle(on){dv.classList.toggle('open',on===undefined?!dv.classList.contains('open'):on);if(dv.classList.contains('open'))draw()}
+function isAdm(){try{return !!(typeof Auth!=='undefined'&&Auth&&typeof Auth.current==='string'&&!Auth.isGuest&&Auth.users&&Auth.users[Auth.current]&&Auth.current.toLowerCase()==='kostblad')}catch(e){return false}}
+function toggle(on){if(on!==false&&!isAdm())return;dv.classList.toggle('open',on===undefined?!dv.classList.contains('open'):on);if(dv.classList.contains('open'))draw()}
+function admSync(){var ok=isAdm();$('dv-btn').style.display=ok?'':'none';if(!ok&&dv.classList.contains('open'))toggle(false)}
+admSync();setInterval(admSync,1000);
 $('dv-btn').addEventListener('click',function(){toggle()});
 addEventListener('keydown',function(e){if(e.key==='F9'||(e.ctrlKey&&e.shiftKey&&e.key.toLowerCase()==='d')){e.preventDefault();toggle()}else if(e.key==='Escape'&&dv.classList.contains('open')&&!/INPUT|TEXTAREA/.test((e.target||{}).tagName))toggle(false);else if(e.ctrlKey&&e.key.toLowerCase()==='z'&&dv.classList.contains('open')&&!/INPUT|TEXTAREA/.test((e.target||{}).tagName)){e.preventDefault();undo()}});
 var fr=0,ft=performance.now();(function loop(t){fr++;if(t-ft>=1000){D.fps=fr;fr=0;ft=t;var f=$('dv-fps');if(f)f.textContent=D.fps+' fps'}requestAnimationFrame(loop)})(ft);
